@@ -14,8 +14,7 @@ module.exports = class extends Client {
 
 	registryCommands() {
 		// Temporário:
-		this.guilds.cache.get("696430420992066112").commands.set(this.commands) // ProcrastinaNão
-		this.guilds.cache.get("803657352267825182").commands.set(this.commands) // COLCIC
+		this.guilds.cache.get("675516131552788508").commands.set(this.commands) // TecnoJr
 		// Global:
 		// this.application.commands.set(this.commands)
 	}
