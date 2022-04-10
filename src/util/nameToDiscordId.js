@@ -75,4 +75,145 @@ module.exports = [
 		name: "Yan Costa Macedo",
 		discordId: "320266772093599746",
 	},
+	// ! Trainees
+	{
+		name: "Alice Martins Valero",
+		discordId: "482554269275521026",
+		role: "trainee",
+	},
+	{
+		name: "Beatriz Pereira Aragão",
+		discordId: "459126601389441024",
+		role: "trainee",
+	},
+	{
+		name: "Brenno Santos Florêncio",
+		discordId: "501835002275692545",
+		role: "trainee",
+	},
+	{
+		name: "Bruno Felipe dos Santos Pereira",
+		discordId: "817978106794999829",
+		role: "trainee",
+	},
+	{
+		name: "Bruno Silva Araújo",
+		discordId: "685506696772452366",
+		role: "trainee",
+	},
+	{
+		name: "Daniel Lago Nano e Silva",
+		discordId: "582295360718766080",
+		role: "trainee",
+	},
+	{
+		name: "Gabriel de Souza Matheus Oliveira",
+		discordId: "871246995023614044",
+		role: "trainee",
+	},
+	{
+		name: "Guilherme Almeida",
+		discordId: "584917609556869152",
+		role: "trainee",
+	},
+	{
+		name: "Isaac de Oliveira Santana",
+		discordId: "719894687078678549",
+		role: "trainee",
+	},
+	{
+		name: "Isaque Lino Brandão Silva",
+		discordId: "616297637632802830",
+		role: "trainee",
+	},
+	{
+		name: "Joabe Andrade do Nascimento",
+		discordId: "699770440742338581",
+		role: "trainee",
+	},
+	{
+		name: "Joabe Ferreira da Silva Filho",
+		discordId: "312203075442180097",
+		role: "trainee",
+	},
+	{
+		name: "João Pedro Borges Homem Del Rey",
+		discordId: "430557449418833930",
+		role: "trainee",
+	},
+	{
+		name: "João Pedro Correia da Silva Noberto",
+		discordId: "180283816450064384",
+		role: "trainee",
+	},
+	{
+		name: "João Pedro dos Santos Rocha",
+		discordId: "756892095578636388",
+		role: "trainee",
+	},
+	{
+		name: "João Victor Leite",
+		discordId: "352734845757292546",
+		role: "trainee",
+	},
+	{
+		name: "Julia de Araújo Ramos",
+		discordId: "674830456058806273",
+		role: "trainee",
+	},
+	{
+		name: "Larissa de Brito Santos",
+		discordId: "701866878552768602",
+		role: "trainee",
+	},
+	{
+		name: "Levi Freitas",
+		discordId: "956482268749250602",
+		role: "trainee",
+	},
+	{
+		name: "Luiz Felipe do Rosário Alves Silva",
+		discordId: "270315795714801664",
+		role: "trainee",
+	},
+	{
+		name: "Maria Eduarda Guedes Alves",
+		discordId: "955055003704365077",
+		role: "trainee",
+	},
+	{
+		name: "Maria Gabriella Araújo Oliveira",
+		discordId: "337349173894447106",
+		role: "trainee",
+	},
+	{
+		name: "Mateus Soares dos Santos",
+		discordId: "    ",
+		role: "trainee",
+	},
+	{
+		name: "Matheus Bonfim Lemos",
+		discordId: "490714783411339274",
+		role: "trainee",
+	},
+	{
+		name: "Murilo Patricio Maia",
+		discordId: "535212147660161030",
+		role: "trainee",
+	},
+	{
+		name: "Pedro Elias Santiago Mattar",
+		discordId: "525747880871460883",
+		role: "trainee",
+	},
+	{
+		name: "Thompson Raul dos Santos Vieira",
+		discordId: "248961621202960384",
+		role: "trainee",
+	},
+	{
+		name: "Valcírio Francisco de Souza Vanderlei Silva Terceiro",
+		discordId: "397121212725198858",
+		role: "trainee",
+	},
 ]
