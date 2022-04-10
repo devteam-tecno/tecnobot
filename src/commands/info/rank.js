@@ -1,5 +1,4 @@
 const Command = require("../../structures/Command")
-const NameToId = require("../../util/nameToDiscordId")
 const { MessageEmbed } = require("discord.js")
 
 const { google } = require("googleapis")
@@ -37,7 +36,7 @@ module.exports = class extends Command {
 	constructor(client) {
 		super(client, {
 			name: "rank",
-			description: "Mostra o rank dos top 10 na TecnoBoard",
+			description: "Mostra o rank dos Top 10 Membros na TecnoBoard",
 		})
 	}
 	run = async (interaction) => {
@@ -54,13 +53,7 @@ module.exports = class extends Command {
 			let rank = element[0]
 			let nome = element[1]
 			let xp = element[2]
-			let tarefas = element[3]
-			tarefas > 0
-				? embed.addField(
-						`\`${rank}º\`   **${nome}**`,
-						`${xp} XP	|	${tarefas} tarefas`
-				  )
-				: embed.addField(`\`${rank}º\`   **${nome}**`, `${xp} XP`)
+			embed.addField(`${rank}º - **${nome}**`, `${xp} XP`)
 		})
 
 		interaction.reply({

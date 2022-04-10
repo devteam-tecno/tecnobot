@@ -66,9 +66,8 @@ module.exports = class extends Command {
 			const embed = new MessageEmbed()
 				.setTitle(`👤 ${userName.name}`)
 				.setColor("#5e16ca")
-				.addField("Ranking", `${perfil[0]}º`, true)
-				.addField("XP Total", `${perfil[2]} XP`, true)
-				.addField("Tarefas Entregues", perfil[3], true)
+				.addField("Ranking", `${perfil[0]}º`)
+				.addField("XP Total", `${perfil[2]} XP`)
 				.setThumbnail(
 					interaction.guild.members.cache
 						.get(userId)
