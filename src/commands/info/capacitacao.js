@@ -29,18 +29,31 @@ module.exports = class extends Command {
 		})
 	}
 
-	run = (interaction) => {
-		interaction.reply({
+	run = async (interaction) => {
+		await interaction.reply({
 			content: "Formulário iniciado. Responda as perguntas abaixo",
 			ephemeral: true,
 		})
 
 		createForm()
 			.then(async (answers) => {
-				interaction.editReply({
-					content: "Capacitações alteradas com sucesso!",
-					embeds: [],
+				// console.log(answers)
+				const embed = new MessageEmbed()
+					.setColor("PURPLE")
+					.setTitle(`Capacitações de ${interaction.user.username}`)
+					.setDescription(
+						`Capacitações alteradas com sucesso!\n\n
+						${answers.join("\n")}`
+					)
+				await interaction.channel.send({
+					embeds: [embed],
 					components: [],
+					ephemeral: false,
+				})
+				await interaction.editReply({
+					content: "Fim",
+					components: [],
+					embeds: [],
 				})
 			})
 			.catch((err) => {
@@ -48,7 +61,9 @@ module.exports = class extends Command {
 
 				const embed = new MessageEmbed()
 					.setColor("RED")
-					.setDescription("Tempo limite ultrapassado, utilize o comando novamente!")
+					.setDescription(
+						"Tempo limite ultrapassado, utilize o comando novamente!"
+					)
 
 				interaction.channel.send({
 					content: interaction.user.toString(),
@@ -58,8 +73,7 @@ module.exports = class extends Command {
 
 		async function createForm() {
 			const answers = []
-
-			const channel = interaction.channel
+			const escolhasValues = []
 
 			let question = questions.find((q) => q.customId === "tipo")
 
@@ -78,7 +92,7 @@ module.exports = class extends Command {
 					const actionRow = new MessageActionRow().addComponents(
 						new MessageSelectMenu(question)
 					)
-					const msg = await channel.send({
+					const msg = await interaction.channel.send({
 						content: interaction.user.toString(),
 						embeds: [embed],
 						components: [actionRow],
@@ -110,11 +124,12 @@ module.exports = class extends Command {
 						if (alreadyHavePermissions) {
 							selectedChannel.permissionOverwrites
 								.delete(membro)
-								.then((channel) =>
+								.then((channel) => {
 									console.log(
 										`Usuário ' ${membro.username} ' removido com sucesso na disciplina ' ${nextQuestion} '`
 									)
-								)
+									escolhasValues.push(`❌ → ${nextQuestion}`)
+								})
 								.catch(console.error)
 						} else {
 							selectedChannel.permissionOverwrites
@@ -122,11 +137,12 @@ module.exports = class extends Command {
 									SEND_MESSAGES: true,
 									VIEW_CHANNEL: true,
 								})
-								.then((channel) =>
+								.then((channel) => {
 									console.log(
 										`Usuário ' ${membro.username} ' adicionado com sucesso na capacitação ' ${nextQuestion} '`
 									)
-								)
+									escolhasValues.push(`✅ → ${nextQuestion}`)
+								})
 								.catch(console.error)
 						}
 					}
@@ -156,7 +172,7 @@ module.exports = class extends Command {
 				})
 			}
 
-			return answers
+			return escolhasValues
 		}
 	}
 }
