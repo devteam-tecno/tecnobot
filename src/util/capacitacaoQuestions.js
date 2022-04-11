@@ -60,6 +60,18 @@ module.exports = [
 				emoji: "💻",
 			},
 			{
+				label: "Wordpress - #01",
+				description: "Igor dos Santos Nascimento",
+				value: "wordpress-1",
+				emoji: "💻",
+			},
+			{
+				label: "Wordpress - #02",
+				description: "Igor dos Santos Nascimento",
+				value: "wordpress-2",
+				emoji: "💻",
+			},
+			{
 				label: "Voltar",
 				value: "voltar",
 				emoji: "⬅️",
@@ -69,14 +81,27 @@ module.exports = [
 	{
 		// Intermediário
 		question: "Qual capacitação você quer adicionar?",
-		description: "Você está visualizando capacitações de Nível Intermediário!",
+		description:
+			"Você está visualizando capacitações de Nível Intermediário!",
 		placeholder: "Selecione a capacitação",
 		customId: "intermediario",
 		options: [
 			{
-				label: "AINDA NÃO FOI ADICIONADO",
-				description: "Esperem mais um pouco!",
-				value: "espera",
+				label: "Web avançada (React)",
+				description: "Breno Vitório de Sousa",
+				value: "react",
+				emoji: "🧠",
+			},
+			{
+				label: "NodeJS",
+				description: "Sem Indicação Ainda",
+				value: "nodejs",
+				emoji: "🧠",
+			},
+			{
+				label: "Testes de Software (QA)",
+				description: "Victor José Gonçalves Martins",
+				value: "qa_tester",
 				emoji: "🧠",
 			},
 			{
@@ -126,9 +151,15 @@ module.exports = [
 		customId: "comercial",
 		options: [
 			{
-				label: "AINDA NÃO FOI ADICIONADO",
-				description: "Esperem mais um pouco!",
-				value: "espera",
+				label: "Vendas",
+				description: "Easy",
+				value: "vendas",
+				emoji: "💰",
+			},
+			{
+				label: "Softskills",
+				description: "PerfilJr",
+				value: "softskills",
 				emoji: "💰",
 			},
 			{
