@@ -58,16 +58,36 @@ module.exports = class extends Command {
 
 		const userName = NameToId.find((m) => m.discordId === userId)
 
-		const spreadsheet = await startGoogle("DBTotal!B2:E")
+		const spreadsheetMembros = await startGoogle("DBTotal!B2:E")
+		const spreadsheetTrainees = await startGoogle("TraineesDBTotal!B2:E")
 
-		const perfil = spreadsheet.values.find((m) => m[1] === userName?.name)
+		const perfilMembro = spreadsheetMembros.values.find((m) => m[1] === userName?.name)
+		const perfilTrainee = spreadsheetTrainees.values.find((m) => m[1] === userName?.name)
 
-		if (perfil) {
+		if (perfilMembro) {
 			const embed = new MessageEmbed()
 				.setTitle(`👤 ${userName.name}`)
 				.setColor("#5e16ca")
-				.addField("Ranking", `${perfil[0]}º`)
-				.addField("XP Total", `${perfil[2]} XP`)
+				.setDescription("Membro")
+				.addField("Ranking", `${perfilMembro[0]}º`)
+				.addField("XP Total", `${perfilMembro[2]} XP`)
+				.setThumbnail(
+					interaction.guild.members.cache
+						.get(userId)
+						.user.displayAvatarURL({ dynamic: true })
+				)
+
+			interaction.reply({
+				embeds: [embed],
+				ephemeral: false,
+			})
+		} else if (perfilTrainee) {
+			const embed = new MessageEmbed()
+				.setTitle(`👤 ${userName.name}`)
+				.setColor("#5e16ca")
+				.setDescription("Trainee")
+				.addField("Ranking", `${perfilTrainee[0]}º`)
+				.addField("XP Total", `${perfilTrainee[2]} XP`)
 				.setThumbnail(
 					interaction.guild.members.cache
 						.get(userId)
