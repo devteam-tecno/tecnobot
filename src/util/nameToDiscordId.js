@@ -188,7 +188,7 @@ module.exports = [
 	},
 	{
 		name: "Mateus Soares dos Santos",
-		discordId: "    ",
+		discordId: "662353850614808586",
 		role: "trainee",
 	},
 	{
