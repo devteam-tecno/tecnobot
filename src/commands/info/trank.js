@@ -45,9 +45,14 @@ module.exports = class extends Command {
 		const lista = spreadsheet.values
 		const embed = new MessageEmbed()
 			.setTitle(`🏅 Rank dos Trainees`)
+			.setURL(
+				"https://docs.google.com/spreadsheets/d/1rUww92ZNxpt4JyQmU9avUYa0bey_9QhaCLXIh5fFO3A/edit#gid=1626511235"
+			)
 			.setColor("#5e16ca")
+			.setDescription(
+				"Para ver a planilha completa e fazer buscas, [clique aqui](https://docs.google.com/spreadsheets/d/1rUww92ZNxpt4JyQmU9avUYa0bey_9QhaCLXIh5fFO3A/edit#gid=1626511235)"
+			)
 			.setTimestamp()
-			.addField("** **", "** **")
 
 		lista.forEach((element) => {
 			let rank = element[0]
