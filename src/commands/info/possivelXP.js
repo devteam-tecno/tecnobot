@@ -40,14 +40,25 @@ module.exports = class extends Command {
 		})
 	}
 	run = async (interaction) => {
-		const spreadsheet = await startGoogle("Referencia!B2:C")
+		const spreadsheet = await startGoogle("Referencia!A2:B")
 		const embed = new MessageEmbed()
 			.setTitle("Possíveis formas de conseguir XP")
 			.setColor("#5e16ca")
 
+		let table = []
+		let i = 0
 		for (const forma of spreadsheet.values) {
-			embed.addField(forma[0], `${forma[1]} XP`, false)
+			table[i] = []
+			table[i++].push(forma[1], forma[0])
 		}
+
+		let formattedText = ""
+		table.forEach((row) => {
+			formattedText +=
+				"`" + ("    " + row[0]).slice(-4) + " `᲼᲼|᲼᲼" + row[1] + "\n"
+		})
+
+		embed.setDescription(`᲼**XP**᲼᲼᲼|᲼᲼**Atividade**\n${formattedText}`)
 
 		interaction.reply({
 			ephemeral: false,
