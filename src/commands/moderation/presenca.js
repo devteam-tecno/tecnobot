@@ -11,7 +11,7 @@ const auth = new GoogleAuth({
 	scopes: "https://www.googleapis.com/auth/spreadsheets",
 })
 
-const startGoogle = async (range) => {
+const getValues = async (range) => {
 	const authClientObject = await auth.getClient()
 	const googleSheetsInstance = google.sheets({
 		version: "v4",
@@ -33,6 +33,78 @@ const startGoogle = async (range) => {
 	return readData.data
 }
 
+const insertValues = async (range, values) => {
+	const authClientObject = await auth.getClient()
+	const googleSheetsInstance = google.sheets({
+		version: "v4",
+		auth: authClientObject,
+	})
+
+	const spreadsheetId = "1rUww92ZNxpt4JyQmU9avUYa0bey_9QhaCLXIh5fFO3A"
+
+	const sheetData = await getValues(range)
+	const lastRow = 4 + sheetData.values.length
+
+	values.forEach((value) => {
+		value.push(`=sumif(Referencia!$A$2:$A;C${lastRow};Referencia!$B$2:$B)`)
+	})
+	const requestBody = {
+		values,
+	}
+	await googleSheetsInstance.spreadsheets.values.append(
+		{
+			spreadsheetId,
+			range,
+			valueInputOption: "USER_ENTERED",
+			requestBody,
+		},
+		(err, result) => {
+			if (err) {
+				// Handle error.
+				// console.log(err)
+			} else {
+				// console.log(result)
+			}
+		}
+	)
+
+	// sortSheet("DBTotal!B2:D", 3, 587561281)
+}
+
+const sortSheet = async (range, index, sheetId) => {
+	const authClientObject = await auth.getClient()
+	const googleSheetsInstance = google.sheets({
+		version: "v4",
+		auth: authClientObject,
+	})
+
+	const spreadsheetId = "1rUww92ZNxpt4JyQmU9avUYa0bey_9QhaCLXIh5fFO3A"
+
+	await googleSheetsInstance.spreadsheets.batchUpdate({
+		spreadsheetId,
+		requestBody: {
+			requests: [
+				{
+					sortRange: {
+						range: {
+							sheetId,
+							startRowIndex: 1,
+							endRowIndex: 1000,
+							startColumnIndex: 1,
+							endColumnIndex: 3,
+						},
+						sortSpecs: [
+							{
+								dimensionIndex: index,
+								sortOrder: "ASCENDING",
+							},
+						],
+					},
+				},
+			],
+		},
+	})
+}
 const presencaChannel = "852308408698667048"
 module.exports = class extends Command {
 	constructor(client) {
@@ -70,10 +142,10 @@ module.exports = class extends Command {
 			return
 		}
 		const motivoPresenca = interaction.options.getString("descrição")
-		const spreadsheet = await startGoogle("Referencia!B2:C")
 
 		const user = await interaction.member.fetch()
 		const channelUserIsIn = await user.voice.channel
+		const today = new Date().toISOString().slice(0, 10)
 
 		if (channelUserIsIn) {
 			const embed = new MessageEmbed()
@@ -95,11 +167,30 @@ module.exports = class extends Command {
 						? `<@${idMembro}>`
 						: `<@${idMembro}>, não está na DB`
 				)
+
+				if (membro.role == "trainee") {
+					await insertValues("TraineesHistórico!A4:D", [
+						[
+							membro?.name || user.user.username,
+							today,
+							motivoPresenca,
+						],
+					])
+				} else {
+					await insertValues("Histórico!A4:D", [
+						[
+							membro?.name || user.user.username,
+							today,
+							motivoPresenca,
+						],
+					])
+				}
 			}
 
 			interaction.guild.channels.cache.get(presencaChannel).send({
 				embeds: [embed],
 			})
+
 			interaction.reply({
 				content: `Presença foi salva no canal ${interaction.guild.channels.cache.get(
 					presencaChannel
