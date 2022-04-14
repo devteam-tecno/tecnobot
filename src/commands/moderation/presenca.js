@@ -52,7 +52,10 @@ module.exports = class extends Command {
 		})
 	}
 	run = async (interaction) => {
-		if (!interaction.member.roles.cache.has("712040676040245350")) {
+		if (
+			!interaction.member.roles.cache.has("712040676040245350") &&
+			!interaction.member.roles.cache.has("963984256420417606")
+		) {
 			const embedErr = new MessageEmbed()
 				.setTitle("Erro")
 				.setDescription(
