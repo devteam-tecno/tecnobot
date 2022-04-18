@@ -1,4 +1,5 @@
 const Command = require("../../structures/Command")
+const { MessageEmbed } = require("discord.js")
 
 module.exports = class extends Command {
 	constructor(client) {
@@ -8,9 +9,13 @@ module.exports = class extends Command {
 		})
 	}
 	run = (interaction) => {
+		const embed = new MessageEmbed()
+			.setDescription(`O ping atual é de **${this.client.ws.ping}ms.**`)
+			.setColor("#2f4a94")
+
 		interaction.reply({
-			content: `O ping atual é de \`${this.client.ws.ping}\`ms.`,
-			ephemeral: true,
+			embeds: [embed],
+			ephemeral: false,
 		})
 	}
 }
