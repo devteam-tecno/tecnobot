@@ -109,9 +109,9 @@ const presencaChannel = "852308408698667048"
 module.exports = class extends Command {
 	constructor(client) {
 		super(client, {
-			name: "presenca",
+			name: "addxp",
 			description:
-				"Salva a presença da reunião na Planilha de Gameficação e no chat de Presença",
+				"Salva na Planilha de Gameficação e no chat de Presença",
 			options: [
 				{
 					name: "descrição",
@@ -125,8 +125,8 @@ module.exports = class extends Command {
 	}
 	run = async (interaction) => {
 		if (
-			!interaction.member.roles.cache.has("712040676040245350") &&
-			!interaction.member.roles.cache.has("963984256420417606")
+			!interaction.member.roles.cache.has("712040676040245350") && //cargo diretoria
+			!interaction.member.roles.cache.has("963984256420417606") // cargo monitores
 		) {
 			const embedErr = new MessageEmbed()
 				.setTitle("Erro")
@@ -160,9 +160,11 @@ module.exports = class extends Command {
 				let idMembro = member[0] // Id do membro
 				let membro = NameToId.find((m) => m.discordId === idMembro)
 				let user = member[1]
+				let membroName =
+					membro?.name || user.user.username || idMembro || "SEM NOME"
 
 				embed.addField(
-					membro?.name || user.user.username,
+					membroName,
 					membro?.name
 						? `<@${idMembro}>`
 						: `<@${idMembro}>, não está na DB`
@@ -170,19 +172,11 @@ module.exports = class extends Command {
 
 				if (membro.role == "trainee") {
 					await insertValues("TraineesHistórico!A4:D", [
-						[
-							membro?.name || user.user.username,
-							today,
-							motivoPresenca,
-						],
+						[membroName, today, motivoPresenca],
 					])
 				} else {
 					await insertValues("Histórico!A4:D", [
-						[
-							membro?.name || user.user.username,
-							today,
-							motivoPresenca,
-						],
+						[membroName, today, motivoPresenca],
 					])
 				}
 			}
@@ -190,6 +184,12 @@ module.exports = class extends Command {
 			interaction.guild.channels.cache.get(presencaChannel).send({
 				embeds: [embed],
 			})
+
+			console.log(
+				`Presença do dia ${new Date().toLocaleDateString(
+					"pt-BR"
+				)} - ${motivoPresenca}`
+			)
 
 			interaction.reply({
 				content: `Presença foi salva no canal ${interaction.guild.channels.cache.get(
