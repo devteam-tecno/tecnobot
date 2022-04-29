@@ -33,6 +33,12 @@ const getValues = async (range) => {
 	return readData.data
 }
 
+const getLastRow = async (range) => {
+	const sheetData = await getValues(range)
+	const lastRow = 4 + sheetData.values.length
+
+	return lastRow
+}
 const insertValues = async (range, values) => {
 	const authClientObject = await auth.getClient()
 	const googleSheetsInstance = google.sheets({
@@ -45,9 +51,6 @@ const insertValues = async (range, values) => {
 	const sheetData = await getValues(range)
 	const lastRow = 4 + sheetData.values.length
 
-	values.forEach((value) => {
-		value.push(`=sumif(Referencia!$A$2:$A;C${lastRow};Referencia!$B$2:$B)`)
-	})
 	const requestBody = {
 		values,
 	}
@@ -59,12 +62,11 @@ const insertValues = async (range, values) => {
 			requestBody,
 		},
 		(err, result) => {
-			if (err) {
-				// Handle error.
-				// console.log(err)
-			} else {
-				// console.log(result)
-			}
+			// if (err) {
+			// 	console.log(err)
+			// } else {
+			// 	console.log(result)
+			// }
 		}
 	)
 
@@ -105,6 +107,7 @@ const sortSheet = async (range, index, sheetId) => {
 		},
 	})
 }
+
 const presencaChannel = "852308408698667048"
 module.exports = class extends Command {
 	constructor(client) {
@@ -145,7 +148,7 @@ module.exports = class extends Command {
 
 		const user = await interaction.member.fetch()
 		const channelUserIsIn = await user.voice.channel
-		const today = new Date().toISOString().slice(0, 10)
+		const todayFormatSheet = new Date().toISOString().slice(0, 10)
 
 		if (channelUserIsIn) {
 			const embed = new MessageEmbed()
@@ -171,17 +174,32 @@ module.exports = class extends Command {
 				)
 
 				if (membro.role == "trainee") {
-					await insertValues("TraineesHistórico!A4:D", [
-						[membroName, today, motivoPresenca],
+					const lastRow = await getLastRow("TraineesHistórico!A4:E")
+					await insertValues("TraineesHistórico!A4:E", [
+						[
+							membroName,
+							todayFormatSheet,
+							`=month(B${lastRow})`,
+							motivoPresenca,
+							`=sumif(Referencia!$A$2:$A;D${lastRow};Referencia!$B$2:$B)`,
+						],
 					])
 				} else {
-					await insertValues("Histórico!A4:D", [
-						[membroName, today, motivoPresenca],
+					const lastRow = await getLastRow("Histórico!A4:E")
+
+					await insertValues("Histórico!A4:E", [
+						[
+							membroName,
+							todayFormatSheet,
+							`=month(B${lastRow})`,
+							motivoPresenca,
+							`=sumif(Referencia!$A$2:$A;D${lastRow};Referencia!$B$2:$B)`,
+						],
 					])
 				}
 			}
 
-			interaction.guild.channels.cache.get(presencaChannel).send({
+			await interaction.guild.channels.cache.get(presencaChannel).send({
 				embeds: [embed],
 			})
 
