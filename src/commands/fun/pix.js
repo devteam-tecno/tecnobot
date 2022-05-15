@@ -5,6 +5,10 @@ const NameToId = require("../../util/nameToDiscordId")
 const { google } = require("googleapis")
 const { GoogleAuth } = require("google-auth-library")
 
+const erro = require("../../util/erro")
+
+const transferenciasChannel = "975368561331695676"
+
 const auth = new GoogleAuth({
 	keyFile: "keys.json", //the key file
 	//url to spreadsheets API
@@ -72,19 +76,6 @@ const insertValues = async (range, values) => {
 	)
 }
 
-const erro = async (interaction, message) => {
-	const embed = new MessageEmbed()
-		.setTitle(`Erro`)
-		.setDescription(message)
-		.setColor("RED")
-		.setTimestamp()
-
-	interaction.reply({
-		ephemeral: true,
-		embeds: [embed],
-	})
-}
-
 module.exports = class extends Command {
 	constructor(client) {
 		super(client, {
@@ -109,18 +100,32 @@ module.exports = class extends Command {
 	}
 	run = async (interaction) => {
 		const valor = interaction.options.getNumber("valor")
-		const user = interaction.options.getUser("usuário")
-		const destinatario = NameToId.find((m) => m.discordId === user.id)
+		const destinatarioUser = interaction.options.getUser("usuário")
+		const destinatario = NameToId.find(
+			(m) => m.discordId === destinatarioUser.id
+		)
 
-		const pagadorU = interaction.user
-		const pagador = NameToId.find((m) => m.discordId === pagadorU.id)
+		const pagadorUser = interaction.user
+		const pagador = NameToId.find((m) => m.discordId === pagadorUser.id)
 
-		if (!destinatario || !pagador) {
-			erro(interaction, "Ocorreu um erro")
+		if (!pagador) {
+			erro(
+				interaction,
+				"Você precisa ser um membro da TecnoJr para realizar uma transferência de XP"
+			)
+
 			return
 		}
-		let destinatarioName = destinatario.name
-		let pagadorName = pagador.name
+
+		if (!destinatario) {
+			erro(
+				interaction,
+				`Você só pode transferir XP para membros da TecnoJr.
+				${destinatarioUser} não está no banco de dados da Tecno.`
+			)
+
+			return
+		}
 
 		const todayFormatSheet = new Date().toISOString().slice(0, 10)
 
@@ -128,53 +133,58 @@ module.exports = class extends Command {
 		const spreadsheetTrainees = await getValues("TraineesDBTotal!B2:E")
 
 		let perfilPagador = spreadsheetMembros.values.find(
-			(m) => m[1] === pagadorName
+			(m) => m[1] === pagador.name
 		)
 		if (!perfilPagador) {
 			perfilPagador = spreadsheetTrainees.values.find(
-				(m) => m[1] === pagadorName
+				(m) => m[1] === pagador.name
 			)
 		}
 
-		let xpAtual = 0
-		if (perfilPagador) {
-			xpAtual = perfilPagador[2]
-		} else {
-			erro(interaction, "Ocorreu um erro")
+		if (!perfilPagador) {
+			erro(
+				interaction,
+				`Não foi possível encontrar seu perfil no banco de dados da Tecno.
+				Envie uma mensagem para algum diretor para verificar isso!`
+			)
+
 			return
 		}
+
+		let xpAtual = perfilPagador[2]
 
 		xpAtual = Number(xpAtual.replace(",", "."))
 		if (valor > xpAtual) {
 			erro(
 				interaction,
-				`Você só tem **${xpAtual.toFixed(2)}xp**\n
-            Farme mais **${(valor - xpAtual).toFixed(2)}xp** para fazer o pix!`
+				`Você só tem **${xpAtual.toFixed(2)}xp**
+            	Farme mais **${(valor - xpAtual).toFixed(2)}xp** para fazer o pix!`
 			)
+
 			return
 		}
 
-		if (valor <= 0) {
+		if (valor < 0.01) {
 			erro(interaction, "Insira um valor válido para fazer o pix!")
 
 			return
 		}
 
-		if (pagadorName == destinatarioName) {
+		if (pagador.name == destinatario.name) {
 			erro(interaction, "Escolha um usuário que não seja você mesmo...")
 
 			return
 		}
 
 		await insertValues("Transferencias!A4:D", [
-			[pagadorName, destinatarioName, todayFormatSheet, valor],
+			[pagador.name, destinatario.name, todayFormatSheet, valor],
 		])
-		const embed = new MessageEmbed()
+
+		const valorFixed = valor.toFixed(2)
+		let embed = new MessageEmbed()
 			.setTitle(`Pagamento Realizado`)
 			.setDescription(
-				`Você acabou de transferir **${valor.toFixed(
-					2
-				)}xp** para **${destinatarioName}**`
+				`Você acabou de transferir **${valorFixed}xp** para **${destinatario.name}**`
 			)
 			.setColor("GREEN")
 			.setTimestamp()
@@ -183,8 +193,30 @@ module.exports = class extends Command {
 			ephemeral: false,
 			embeds: [embed],
 		})
+
+		embed = new MessageEmbed()
+			.setTitle(`Pagamento Recebido`)
+			.setDescription(
+				`**${pagador.name}** (<@${pagadorUser.id}>) acabou de te enviar um pix de **${valorFixed}xp** `
+			)
+			.setColor("GREEN")
+			.setTimestamp()
+
+		destinatarioUser.send({ embeds: [embed] })
+
+		embed = new MessageEmbed()
+			.setTitle(`Transferência Realizada`)
+			.setDescription(
+				`${pagadorUser} fez um pix de **${valorFixed}xp** para ${destinatarioUser}`
+			)
+			.setColor("GREEN")
+			.setTimestamp()
+
+		interaction.guild.channels.cache.get(transferenciasChannel).send({
+			embeds: [embed],
+		})
 		console.log(
-			`[LOG] ${pagadorName} transferiu ${valor}xp para ${destinatarioName}`
+			`[LOG] ${pagador.name} transferiu ${valorFixed}xp para ${destinatario.name}`
 		)
 		return
 	}
