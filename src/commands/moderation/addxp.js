@@ -39,6 +39,7 @@ const getLastRow = async (range) => {
 
 	return lastRow
 }
+
 const insertValues = async (range, values) => {
 	const authClientObject = await auth.getClient()
 	const googleSheetsInstance = google.sheets({
@@ -49,7 +50,6 @@ const insertValues = async (range, values) => {
 	const spreadsheetId = "1rUww92ZNxpt4JyQmU9avUYa0bey_9QhaCLXIh5fFO3A"
 
 	const sheetData = await getValues(range)
-	const lastRow = 4 + sheetData.values.length
 
 	const requestBody = {
 		values,
@@ -142,9 +142,12 @@ module.exports = class extends Command {
 				embeds: [embedErr],
 				ephemeral: true,
 			})
+
 			return
 		}
+
 		const motivoPresenca = interaction.options.getString("descrição")
+
 
 		const user = await interaction.member.fetch()
 		const channelUserIsIn = await user.voice.channel
@@ -159,6 +162,12 @@ module.exports = class extends Command {
 				.setColor("#5e16ca")
 				.setTimestamp()
 
+			let membrosPresentes = []
+			let traineesPresentes = []
+
+			let lastRowTrainee = await getLastRow("TraineesHistórico!A4:E")
+			let lastRowMembro = await getLastRow("Histórico!A4:E")
+
 			for (const member of channelUserIsIn.members) {
 				let idMembro = member[0] // Id do membro
 				let membro = NameToId.find((m) => m.discordId === idMembro)
@@ -166,7 +175,7 @@ module.exports = class extends Command {
 				let membroName =
 					membro?.name || user.user.username || idMembro || "SEM NOME"
 
-				embed.addField(
+				await embed.addField(
 					membroName,
 					membro?.name
 						? `<@${idMembro}>`
@@ -174,30 +183,31 @@ module.exports = class extends Command {
 				)
 
 				if (membro.role == "trainee") {
-					const lastRow = await getLastRow("TraineesHistórico!A4:E")
-					await insertValues("TraineesHistórico!A4:E", [
-						[
-							membroName,
-							todayFormatSheet,
-							`=month(B${lastRow})`,
-							motivoPresenca,
-							`=sumif(Referencia!$A$2:$A;D${lastRow};Referencia!$B$2:$B)`,
-						],
+					traineesPresentes.push([
+						membroName,
+						todayFormatSheet,
+						`=month(B${lastRowTrainee})`,
+						motivoPresenca,
+						`=sumif(Referencia!$A$2:$A;D${lastRowTrainee};Referencia!$B$2:$B)`,
 					])
+					lastRowTrainee++
 				} else {
-					const lastRow = await getLastRow("Histórico!A4:E")
-
-					await insertValues("Histórico!A4:E", [
-						[
-							membroName,
-							todayFormatSheet,
-							`=month(B${lastRow})`,
-							motivoPresenca,
-							`=sumif(Referencia!$A$2:$A;D${lastRow};Referencia!$B$2:$B)`,
-						],
+					membrosPresentes.push([
+						membroName,
+						todayFormatSheet,
+						`=month(B${lastRowMembro})`,
+						motivoPresenca,
+						`=sumif(Referencia!$A$2:$A;D${lastRowMembro};Referencia!$B$2:$B)`,
 					])
+					lastRowMembro++
 				}
 			}
+
+			if (membrosPresentes.length > 0)
+				await insertValues("Histórico!A4:E", membrosPresentes)
+
+			if (traineesPresentes.length > 0)
+				await insertValues("TraineesHistórico!A4:E", traineesPresentes)
 
 			await interaction.guild.channels.cache.get(presencaChannel).send({
 				embeds: [embed],
@@ -209,12 +219,18 @@ module.exports = class extends Command {
 				)} - ${motivoPresenca}`
 			)
 
-			interaction.reply({
-				content: `Presença foi salva no canal ${interaction.guild.channels.cache.get(
-					presencaChannel
-				)}`,
-				ephemeral: true,
-			})
+			await interaction
+				.reply({
+					content: `Presença foi salva no canal ${interaction.guild.channels.cache.get(
+						presencaChannel
+					)}`,
+					ephemeral: true,
+				})
+				.catch((err) => {
+					user.send(
+						"A presença foi salva mesmo que tenha aparecido um erro!"
+					)
+				})
 		} else {
 			const embed = new MessageEmbed()
 				.setTitle(`Erro`)
@@ -229,5 +245,7 @@ module.exports = class extends Command {
 				embeds: [embed],
 			})
 		}
+
+		return
 	}
 }
