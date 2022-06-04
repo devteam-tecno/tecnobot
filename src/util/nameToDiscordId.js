@@ -48,6 +48,10 @@ module.exports = [
 		discordId: "226487366552911873",
 	},
 	{
+		name: "Samuel Vasconcelos",
+		discordId: "157288062584356864",
+	},
+	{
 		name: "Daniel Oliveira da Silva",
 		discordId: "535586156784517120",
 	},
