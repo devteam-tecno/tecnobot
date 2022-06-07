@@ -10,7 +10,7 @@ const auth = new GoogleAuth({
 	scopes: "https://www.googleapis.com/auth/spreadsheets",
 })
 
-const startGoogle = async (range) => {
+const getValues = async (range) => {
 	const authClientObject = await auth.getClient()
 	const googleSheetsInstance = google.sheets({
 		version: "v4",
@@ -40,7 +40,7 @@ module.exports = class extends Command {
 		})
 	}
 	run = async (interaction) => {
-		const spreadsheet = await startGoogle("TraineesDBTotal!B2:E11")
+		const spreadsheet = await getValues("TraineesDBTotal!B2:E11")
 
 		const lista = spreadsheet.values
 		const embed = new MessageEmbed()
@@ -58,13 +58,7 @@ module.exports = class extends Command {
 			let rank = element[0]
 			let nome = element[1]
 			let xp = element[2]
-			let tarefas = element[3]
-			tarefas > 0
-				? embed.addField(
-						`${rank}º - **${nome}**`,
-						`${xp} XP	|	${tarefas} tarefas`
-				  )
-				: embed.addField(`${rank}º - **${nome}**`, `${xp} XP`)
+			embed.addField(`${rank}º - **${nome}**`, `${xp} XP`)
 		})
 
 		interaction.reply({
