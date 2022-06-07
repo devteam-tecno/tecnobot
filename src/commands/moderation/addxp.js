@@ -4,6 +4,7 @@ const NameToId = require("../../util/nameToDiscordId")
 
 const { google } = require("googleapis")
 const { GoogleAuth } = require("google-auth-library")
+const erro = require("../../util/erro")
 
 const auth = new GoogleAuth({
 	keyFile: "keys.json", //the key file
@@ -147,7 +148,6 @@ module.exports = class extends Command {
 		}
 
 		const motivoPresenca = interaction.options.getString("descrição")
-
 
 		const user = await interaction.member.fetch()
 		const channelUserIsIn = await user.voice.channel

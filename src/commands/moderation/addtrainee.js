@@ -1,6 +1,7 @@
 const Command = require("../../structures/Command")
 const { MessageEmbed } = require("discord.js")
 const NameToId = require("../../util/nameToDiscordId")
+const erro = require("../../util/erro")
 
 module.exports = class extends Command {
 	constructor(client) {
@@ -11,17 +12,10 @@ module.exports = class extends Command {
 	}
 	run = async (interaction) => {
 		if (!interaction.member.roles.cache.has("712040676040245350")) {
-			const embedErr = new MessageEmbed()
-				.setTitle("Erro")
-				.setDescription(
-					"Você não tem permissão para realizar esse comando."
-				)
-				.setColor("RED")
-
-			interaction.reply({
-				embeds: [embedErr],
-				ephemeral: true,
-			})
+			erro(
+				interaction,
+				"Você não tem permissão para realizar esse comando."
+			)
 			return
 		}
 
